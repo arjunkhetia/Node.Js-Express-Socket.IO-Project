@@ -24,6 +24,25 @@ Start Express.js app at `http://localhost:3000/`:
 ```bash
 $ npm start
 ```
+
+You can clone the Front-end for this project with Angular - 8.2.8 & Socket.IO - 2.3.0 at :
+
+```bash
+$ git clone https://github.com/arjunkhetia/Node.Js-Express-Project.git
+```
+
+Install dependencies:
+
+```bash
+$ npm install
+```
+
+Start the Angular app at `http://localhost:4200/`:
+
+```bash
+$ npm start
+```
+
 # Socket.IO
 
 Socket.IO enables real-time bidirectional event-based communication.
