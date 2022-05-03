@@ -1,4 +1,4 @@
-# Node-Express-Socket.IO Project   ![Version][version-image]
+# Node Express Socket.IO Project   ![Version][version-image]
 
 ![Linux Build][linuxbuild-image]
 ![Windows Build][windowsbuild-image]
@@ -25,10 +25,10 @@ Start Express.js app at `http://localhost:3000/`:
 $ npm start
 ```
 
-You can clone the Front-end for this project with Angular - 8.2.8 & Socket.IO - 2.3.0 at :
+You can clone the Front-end for this project with Angular - 8.2.8 & Socket.IO - 4.5.0 at :
 
 ```bash
-$ git clone https://github.com/arjunkhetia/Node.Js-Express-Project.git
+$ git clone https://github.com/arjunkhetia/Angular-Socket.IO-Project.git
 ```
 
 Install dependencies:
@@ -48,25 +48,28 @@ $ npm start
 Socket.IO enables real-time bidirectional event-based communication.
 
 ```js
-var socket_io = require('socket.io');
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+
+// Create the http server
+const httpServer = createServer(app);
+// Create the Socket IO server on the top of http server
+const io = new Server(httpServer);
+
 var clients = [];
 
-// Attach socket.io to express app
-var socketio = socket_io();
-app.socket_io = socketio;
-
-socketio.on('connection', function(socket){
+io.on("connection", (socket) => {
   var client = {
     clientId: clients.length + 1,
     socketId: socket.id
   }
   clients.push(client);
   console.log(socket.id + ' - client connected');
-  socketio.emit('socketid', client);
+  socket.emit('socketid', client);
 
   socket.on('client-message', (message) => {
     console.log(message);
-    socketio.emit('server-message', message);
+    socket.emit('server-message', message);
   });
 
   socket.on('disconnect', function() {
@@ -76,6 +79,10 @@ socketio.on('connection', function(socket){
   });
 });
 ```
+
+## Socket.IO on Postman
+
+![Postman Page](https://github.com/arjunkhetia/Node.Js-Express-Socket.IO-Project/blob/master/public/postman.png "Postman Page")
 
 # Nodemon
 

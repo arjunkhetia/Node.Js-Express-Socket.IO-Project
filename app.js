@@ -3,8 +3,7 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var hbs = require('express-handlebars');
+var { create } = require('express-handlebars');
 var logger = require('morgan');
 var loggerutil = require('./utilities/logger');
 var datalogger = require('./utilities/datalogger');
@@ -12,7 +11,8 @@ var fs = require('fs');
 var rfs = require('rotating-file-stream');
 var helmet = require('helmet');
 var compression = require('compression');
-var socket_io = require('socket.io');
+const { createServer } = require("http");
+const { Server } = require("socket.io");
 
 // Defining routes
 var routes = require('./routes');
@@ -20,9 +20,10 @@ var routes = require('./routes');
 // Generating an express app
 var app = express();
 
-// Attach socket.io to express app
-var socketio = socket_io();
-app.socket_io = socketio;
+// Create the http server
+const httpServer = createServer(app);
+// Create the Socket IO server on the top of http server
+const io = new Server(httpServer);
 
 // Express Status Monitor for monitoring server status
 app.use(require('express-status-monitor')({
@@ -76,13 +77,14 @@ fs.appendFile('./log/ServerData.log', '', function (err) {
 });
 
 // view engine setup - Express-Handlebars
-app.engine('hbs', hbs({
-    extname: 'hbs',
-    defaultLayout: 'layout',
-    layoutsDir: __dirname + '/views/'
-}));
+const hbs = create({
+  extname: '.hbs',
+  defaultLayout: 'layout',
+  layoutsDir: __dirname + '/views/'
+});
+app.engine('hbs', hbs.engine);
+app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
 
 // Create a rotating write stream
 var accessLogStream = rfs.createStream('Server.log', {
@@ -117,8 +119,8 @@ app.use(logger(':remote-addr :remote-user :datetime :req[header] :method :url HT
 // Helmet helps for securing Express apps by setting various HTTP headers
 app.use(helmet());
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -149,18 +151,18 @@ app.use(function(err, req, res, next) {
 
 var clients = [];
 
-socketio.on('connection', function(socket){
+io.on("connection", (socket) => {
   var client = {
     clientId: clients.length + 1,
     socketId: socket.id
   }
   clients.push(client);
   console.log(socket.id + ' - client connected');
-  socketio.emit('socketid', client);
+  socket.emit('socketid', client);
 
   socket.on('client-message', (message) => {
     console.log(message);
-    socketio.emit('server-message', message);
+    socket.emit('server-message', message);
   });
 
   socket.on('disconnect', function() {
@@ -182,4 +184,4 @@ process.on('uncaughtException', (error) => {
    process.exit();
 });
 
-module.exports = app;
+module.exports = { app: app, server: httpServer };
