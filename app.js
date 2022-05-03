@@ -13,6 +13,7 @@ var helmet = require('helmet');
 var compression = require('compression');
 const { createServer } = require("http");
 const { Server } = require("socket.io");
+const { instrument } = require("@socket.io/admin-ui");
 
 // Defining routes
 var routes = require('./routes');
@@ -23,7 +24,19 @@ var app = express();
 // Create the http server
 const httpServer = createServer(app);
 // Create the Socket IO server on the top of http server
-const io = new Server(httpServer);
+const io = new Server(httpServer, {
+  cors: {
+    origin: ["https://admin.socket.io"],
+    credentials: true
+  }
+});
+
+instrument(io, {
+  auth: false,
+  readonly: false,
+  namespaceName: "/admin",
+  serverId: `${require("os").hostname()}#${process.pid}`
+});
 
 // Express Status Monitor for monitoring server status
 app.use(require('express-status-monitor')({

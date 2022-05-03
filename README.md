@@ -25,7 +25,7 @@ Start Express.js app at `http://localhost:3000/`:
 $ npm start
 ```
 
-You can clone the Front-end for this project with Angular - 8.2.8 & Socket.IO - 4.5.0 at :
+You can clone the Front-end for this project with Angular - 13.3.0 & Socket.IO - 4.5.0 at :
 
 ```bash
 $ git clone https://github.com/arjunkhetia/Angular-Socket.IO-Project.git
@@ -83,6 +83,46 @@ io.on("connection", (socket) => {
 ## Socket.IO on Postman
 
 ![Postman Page](https://github.com/arjunkhetia/Node.Js-Express-Socket.IO-Project/blob/master/public/postman.png "Postman Page")
+
+# Socket.IO Admin UI
+
+We can head up to https://admin.socket.io for dashboard. Please enter the URL of our server, including the namespace (for example, http://localhost:3000/admin or https://example.com/admin) and the credentials, if applicable.
+
+```js
+const { instrument } = require("@socket.io/admin-ui");
+
+const io = new Server(httpServer, {
+  cors: {
+    origin: ["https://admin.socket.io"],
+    credentials: true
+  }
+});
+
+instrument(io, {
+  auth: false,  // This option is mandatory. We can either disable authentication.
+  readonly: false,  // Whether to put the admin UI in read-only mode.
+  namespaceName: "/admin",  // The name of the namespace which will be created to handle the administrative tasks.
+  serverId: `${require("os").hostname()}#${process.pid}`  // The ID of the given server. If we have several Socket.IO servers on the same machine.
+});
+```
+
+## Admin UI Screen
+
+### Dashboard Screen
+
+![Dashboard](https://github.com/arjunkhetia/Node.Js-Express-Socket.IO-Project/blob/master/public/dashboard.png "Dashboard")
+
+### Client Details Screen
+
+![Client](https://github.com/arjunkhetia/Node.Js-Express-Socket.IO-Project/blob/master/public/client.png "Client")
+
+### Server Screen
+
+![Server](https://github.com/arjunkhetia/Node.Js-Express-Socket.IO-Project/blob/master/public/server.png "Server")
+
+### Socket / Room Details
+
+![Socket-Room](https://github.com/arjunkhetia/Node.Js-Express-Socket.IO-Project/blob/master/public/room.png "Socket-Room")
 
 # Nodemon
 
