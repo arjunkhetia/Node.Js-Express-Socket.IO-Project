@@ -106,7 +106,7 @@ instrument(io, {
 });
 ```
 
-## Admin UI Screen
+## Admin UI
 
 ### Dashboard Screen
 
