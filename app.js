@@ -42,6 +42,7 @@ instrument(io, {
 app.use(require('express-status-monitor')({
   title: 'Server Status',
   path: '/status',
+  // socketPath: '/socket.io', // In case you use a custom path for socket.io
   // websocket: existingSocketIoInstance,
   spans: [{
     interval: 1,
@@ -57,6 +58,8 @@ app.use(require('express-status-monitor')({
     cpu: true,
     mem: true,
     load: true,
+    eventLoop: true,
+    heap: true,
     responseTime: true,
     rps: true,
     statusCodes: true
@@ -66,7 +69,8 @@ app.use(require('express-status-monitor')({
     host: 'localhost',
     path: '/',
     port: '3000'
-  }]
+  }],
+  // ignoreStartsWith: '/admin'
 }));
 
 // compress all responses
